@@ -1,3 +1,6 @@
+wandb/
+mistral_similes/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
