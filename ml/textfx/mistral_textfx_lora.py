@@ -21,15 +21,14 @@ wandb.init(
 
 # can change the quantization type using https://huggingface.co/blog/4bit-transformers-bitsandbytes
 tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1")
-base_model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2", device_map='auto')
-
-# load existing adapter (only if already exists!)
-# model = PeftModel.from_pretrained(base_model, 'mistral_textfx/textfx_adapter')
-
-# setup tokenizer
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = 'right'
 tokenizer_function = lambda x : tokenizer(x['text'], truncation=True, padding='max_length', max_length=MAX_SEQ_LENGTH)
+
+base_model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2", device_map='auto')
+
+# load existing adapter (only if already exists!)
+model = PeftModel.from_pretrained(base_model, 'mistral_textfx/checkpoint-17000/textfx_adapter')
 
 # load dataset
 train_dataset = Dataset.from_csv('./data/dataset_train.csv')
@@ -72,7 +71,7 @@ training_args = TrainingArguments(
     logging_dir='./logs',
     learning_rate=2e-5,
     weight_decay=0.01,
-    num_train_epochs=10,
+    num_train_epochs=5,
     report_to='wandb'
 )
 
