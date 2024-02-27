@@ -1,5 +1,7 @@
 wandb/
 mistral_textfx/
+mistral_similes/
+*.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -69,7 +69,7 @@ training_args = TrainingArguments(
     f'mistral_textfx',
     evaluation_strategy="epoch",
     logging_dir='./logs',
-    learning_rate=2e-5,
+    learning_rate=2e-4,
     weight_decay=0.01,
     num_train_epochs=5,
     report_to='wandb'
