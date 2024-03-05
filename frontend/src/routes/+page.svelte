@@ -4,21 +4,51 @@
 </svelte:head>
 
 <script>
-  let selection = '';
+  import { writable } from 'svelte/store';
 
-  // TODO: add handler for selected text:
-  // 1. clean up HTML, only provide text
-  // 2. show modal
-  // 3. make API call to backend
+  let selection = ''
+  let apiBaseUrl = 'http://localhost:8000/ml/' // TODO: change to env var
+
+	// let promise = Promise.resolve([]); // TODO: rename
+  let suggestions = writable([]);
 
   function handleSelection() {
     var element = document.querySelector("trix-editor")
 
     let range = element.editor.getSelectedRange();
     selection = element.editor.getDocument().getStringAtRange(range)
-    console.log(selection)
   }
 
+  async function handleSuggestion(type) {
+    const response = await fetch(apiBaseUrl + type + '/', {
+      method: 'POST',
+      mode: 'cors',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 'prompt': selection })
+    })
+
+    if (response.ok) {
+      let output = await response.json()
+      let cardText = output.completion.text
+      console.log(cardText)
+
+      if (type != 'critique') {
+        cardText = output.prompt + " " + cardText
+      }
+
+      suggestions.update(currentSuggestions => {
+        return [...currentSuggestions, cardText]
+      })
+    } else {
+      throw new Error();
+    }
+  }
+
+  function deleteSuggestion(index) {
+    suggestions.update(currentSuggestions => {
+      return currentSuggestions.filter((_, i) => i !== index);
+    });
+  }
 </script>
 
 
@@ -32,14 +62,23 @@
       <trix-editor id="writing_textarea" toolbar="trix_toolbar" on:trix-selection-change={handleSelection}></trix-editor>
     </div>
     <div class="col">
-      <form method="POST">
-        <a class="button primary">Critique</a>
-        <a class="button primary">Simile</a>
-        <a class="button primary">Scene</a>
-      </form>
+      <a class="button primary" on:click="{() => handleSuggestion('critique')}">Critique</a>
+      <a class="button primary" on:click="{() => handleSuggestion('simile')}">Simile</a>
+      <a class="button primary" on:click="{() => handleSuggestion('scene')}">Scene</a>
+      <a class="button primary" on:click="{() => handleSuggestion('pov')}">POV</a>
+
+      <div class="col">
+        {#each $suggestions.slice().reverse() as suggestion, index}
+          <div class="card suggestion">
+            {#each suggestion.split('\n') as line}
+              <p>{line}</p>
+            {/each}
+            <button on:click="{() => deleteSuggestion(index)}">Delete</button>
+          </div>
+        {/each}
+      </div>
     </div>
   </div>
-
 </main>
 
 <style>
@@ -51,7 +90,12 @@
 
   #writing_textarea {
     border: 1px solid;
-    height: 50rem; /* Set the fixed height */
+    /* height: 50rem; /* Set the fixed height */
     resize: none; /* Prevent resizing */
+  }
+
+  .suggestion {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 </style>
