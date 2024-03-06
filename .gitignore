@@ -3,8 +3,10 @@ mistral_textfx/
 mistral_similes/
 *.out
 *.swp
+*.gguf
 
 node_modules/
+llama.cpp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
