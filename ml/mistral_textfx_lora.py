@@ -28,7 +28,7 @@ tokenizer_function = lambda x : tokenizer(x['text'], truncation=True, padding='m
 base_model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2", device_map='auto')
 
 # load existing adapter (only if already exists!)
-model = PeftModel.from_pretrained(base_model, 'mistral_textfx/checkpoint-17000/textfx_adapter')
+model = PeftModel.from_pretrained(base_model, 'models/mistral_similes/textfx_adapter')
 
 # load dataset
 train_dataset = Dataset.from_csv('./data/dataset_train.csv')
