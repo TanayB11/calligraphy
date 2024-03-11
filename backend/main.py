@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from llama_cpp import Llama
 
 llm = Llama(
-    model_path="../ml/models/mistral_textfx/mistral_similes-Q5_K_S.gguf",
+    model_path='../ml/models/mistral_similes-Q5_K_S.gguf',
     chat_format="mistral-instruct",
     n_ctx=8192,
     n_gpu_layers=-1,
@@ -88,7 +88,12 @@ async def gen_explode(prompt: Prompt):
 
 @app.post("/ml/critique/")
 async def gen_critique(prompt: Prompt):
+<<<<<<< Updated upstream
     pre_prompt = """
+=======
+    # https://www.reddit.com/r/ChatGPTPro/comments/14f6jqu/advanced_cot_prompts_for_gpt4_critical_ethical/
+    pre_prompt = '''
+>>>>>>> Stashed changes
         You are an advanced AI Language Model trained in persuasive writing, expository writing, and storytelling.
         Your task is to critique writing to the best of your ability.
         To ensure engaging and imaginative feedback, consider various writing elements and follow a step-by-step process.
