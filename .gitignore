@@ -4,6 +4,8 @@ mistral_similes/
 *.out
 *.swp
 *.gguf
+.DS_Store
+bruno/
 
 node_modules/
 llama.cpp/
