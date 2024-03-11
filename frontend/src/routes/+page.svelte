@@ -1,18 +1,5 @@
 <script>
 	import TextHighlighter from './TextHighlighter.svelte';
-
-	let highlights = '';
-
-	function applyHighlights(text) {
-		return text.replace(/\n$/g, '\n\n').replace(/[A-Z].*?\b/g, '<mark></mark>');
-	}
-
-	function handleInput(event) {
-		const text = event.target.value;
-		const highlightedText = applyHighlights(text);
-		highlights = highlightedText;
-		console.log(highlightedText);
-	}
 </script>
 
 <svelte:head>
