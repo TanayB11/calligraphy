@@ -13,15 +13,14 @@
 	function handleInput() {
 		// Auto-expand the textarea
 		textarea.style.height = 'auto';
-		textarea.style.height = `${textarea.scrollHeight}px`;
+		const height = Math.max(textarea.scrollHeight, 180);
+		textarea.style.height = `${height}px`;
 
 		// Auto-expand the container
-		container.style.height = 'auto';
-		container.style.height = `${textarea.scrollHeight}px`;
+		container.style.height = `${height}px`;
 
 		// Auto-expand the backdrop
-		backdrop.style.height = 'auto';
-		backdrop.style.height = `${textarea.scrollHeight}px`;
+		backdrop.style.height = `${height}px`;
 
 		const text = textarea.value;
 		const highlightedText = applyHighlights(text);
@@ -37,14 +36,7 @@
 	<div class="backdrop" bind:this={backdrop}>
 		<div class="highlights" bind:this={highlights}></div>
 	</div>
-	<textarea bind:this={textarea} name="text"
-		>This demo shows how to highlight bits of text within a textarea. Alright, that's a lie. You
-		can't actually render markup inside a textarea. However, you can fake it by carefully
-		positioning a div behind the textarea and adding your highlight markup there. JavaScript takes
-		care of syncing the content and scroll position from the textarea to the div, so everything
-		lines up nicely. Hit the toggle button to peek behind the curtain. And feel free to edit this
-		text. All capitalized words will be highlighted.</textarea
-	>
+	<textarea bind:this={textarea} name="text"></textarea>
 </div>
 
 <style>

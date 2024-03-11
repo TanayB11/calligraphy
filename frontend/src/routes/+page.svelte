@@ -20,8 +20,8 @@
 	<meta name="description" content="Calligraphy - Helps you write" />
 </svelte:head>
 
-<main class="max-w-3xl mx-auto mt-20">
-	<h1 class="text-6xl font-bold">Calligraphy ✍️</h1>
+<main class="w-[460px] text-center mx-auto mt-20">
+	<h1 class="text-6xl font-bold mb-8">Calligraphy ✍️</h1>
 
 	<TextHighlighter />
 </main>
