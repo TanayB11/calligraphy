@@ -8,6 +8,31 @@
 
 	onMount(() => {
 		textarea.addEventListener('input', handleInput);
+		textarea.addEventListener('focus', () => {
+			textarea.style.pointerEvents = 'auto';
+		});
+		textarea.addEventListener('blur', () => {
+			textarea.style.pointerEvents = 'none';
+		});
+		textarea.style.pointerEvents = 'none';
+
+		// Dynamically manage pointer-events for marks
+		textarea.addEventListener('mousemove', (e) => {
+			const rect = textarea.getBoundingClientRect();
+			const x = e.clientX - rect.left; // x position within the element.
+			const y = e.clientY - rect.top; // y position within the element.
+			const elementAtPoint = document.elementFromPoint(x, y);
+
+			if (elementAtPoint && elementAtPoint.tagName === 'MARK') {
+				textarea.style.pointerEvents = 'none';
+			} else {
+				textarea.style.pointerEvents = 'auto';
+			}
+		});
+
+		textarea.addEventListener('mouseleave', () => {
+			textarea.style.pointerEvents = 'auto';
+		});
 	});
 
 	function handleInput() {
@@ -28,7 +53,17 @@
 	}
 
 	function applyHighlights(text) {
-		return text.replace(/\n$/g, '\n\n').replace(/[A-Z].*?\b/g, '<mark>$&</mark>');
+		const highlightedText = text.replace(/\n$/g, '\n\n').replace(/[A-Z].*?\b/g, '<mark>$&</mark>');
+
+		// make all marks clickable
+		const marks = highlights.querySelectorAll('mark');
+		marks.forEach((mark) => {
+			mark.addEventListener('click', () => {
+				alert(mark.textContent);
+			});
+		});
+
+		return highlightedText;
 	}
 </script>
 
@@ -36,7 +71,7 @@
 	<div class="backdrop" bind:this={backdrop}>
 		<div class="highlights" bind:this={highlights}></div>
 	</div>
-	<textarea bind:this={textarea} name="text"></textarea>
+	<textarea bind:this={textarea} name="text">This is a test</textarea>
 </div>
 
 <style>
@@ -103,6 +138,7 @@
 		overflow: hidden; /* Disabled scrolling */
 		resize: none;
 		transition: transform 1s;
+		pointer-events: auto; /* Allow clicks to pass through to marks */
 	}
 
 	:global(mark) {
@@ -122,5 +158,6 @@
 	textarea:focus {
 		outline: none;
 		box-shadow: 0 0 0 2px #c6aada;
+		pointer-events: auto; /* Re-enable pointer events when focused */
 	}
 </style>
