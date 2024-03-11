@@ -1,0 +1,13 @@
+@font-face {
+	font-family: 'Canela Text';
+	font-style: normal;
+	font-weight: 500;
+	src: url('/fonts/CanelaText-Regular.otf');
+}
+
+@font-face {
+	font-family: 'Canela Deck';
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/CanelaDeck-Bold.otf');
+}

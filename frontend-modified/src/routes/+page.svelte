@@ -1,5 +1,4 @@
 <script>
-	import 'trix/dist/trix.css';
 	import { writable } from 'svelte/store';
 
 	let selection = '';
@@ -53,7 +52,7 @@
 </svelte:head>
 
 <main class="container">
-	<h1>Calligraphy</h1>
+	<h1 class="text-4xl font-bold">Csalligraphy</h1>
 
 	<div class="row">
 		<div class="col">
@@ -85,6 +84,9 @@
 </main>
 
 <style>
+	h1 {
+		font-family: 'Canela Deck', sans-serif;
+	}
 	main {
 		max-width: 50%;
 		margin: 0 auto;
