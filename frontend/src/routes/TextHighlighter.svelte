@@ -35,7 +35,45 @@
 		});
 	});
 
-	function handleInput() {
+	async function fetchCritique(text) {
+		const response = await fetch('/ml/critique_openai/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ prompt: text }),
+		});
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
+		return response.json();
+	}
+
+	function debounce(func, wait) {
+		let timeout;
+		return function(...args) {
+			const later = () => {
+				clearTimeout(timeout);
+				func(...args);
+			};
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		};
+	}
+
+	let debouncedFetchCritique = debounce(async () => {
+		const text = textarea.value;
+		try {
+			const critiqueData = await fetchCritique(text);
+			const highlightedText = applyHighlights(text, critiqueData);
+			highlights.innerHTML = highlightedText;
+			attachMarkEventListeners(); // Re-attach event listeners to marks
+		} catch (error) {
+			console.error('Failed to fetch critique:', error);
+		}
+	}, 3000); // 3000 milliseconds = 3 seconds
+
+	async function handleInput() {
 		// Auto-expand the textarea
 		textarea.style.height = 'auto';
 		const height = Math.max(textarea.scrollHeight, 180);
@@ -47,23 +85,28 @@
 		// Auto-expand the backdrop
 		backdrop.style.height = `${height}px`;
 
-		const text = textarea.value;
-		const highlightedText = applyHighlights(text);
-		highlights.innerHTML = highlightedText;
+		debouncedFetchCritique();
 	}
 
-	function applyHighlights(text) {
-		const highlightedText = text.replace(/\n$/g, '\n\n').replace(/[A-Z].*?\b/g, '<mark>$&</mark>');
+	function applyHighlights(text, critiqueData) {
+		let highlightedText = text;
+		critiqueData.completion.sentences.forEach(sentence => {
+			const { quote, critiques } = sentence;
+			// Example: Change color based on critique type (simplified for brevity)
+			const color = critiques.factChecking ? 'yellow' : 'lightblue';
+			highlightedText = highlightedText.replace(quote, `<mark style="background-color: ${color};">${quote}</mark>`);
+		});
+		return highlightedText;
+	}
 
-		// make all marks clickable
+	function attachMarkEventListeners() {
 		const marks = highlights.querySelectorAll('mark');
 		marks.forEach((mark) => {
+			mark.style.cursor = 'pointer';
 			mark.addEventListener('click', () => {
 				alert(mark.textContent);
 			});
 		});
-
-		return highlightedText;
 	}
 </script>
 
@@ -145,6 +188,7 @@
 		border-radius: 3px;
 		color: transparent;
 		background-color: #b1d5e5;
+		cursor: pointer; /* Ensure marks are clickable */
 	}
 
 	:global(.perspective .backdrop) {
