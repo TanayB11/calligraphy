@@ -1,15 +1,15 @@
 <script>
-	export let message = '';
-	export let visible = false;
-	export let onAccept = () => {};
-	export let onReject = () => {};
+	export let popupMessage = '';
+	export let popupVisible = false;
+	export let handleAccept = () => {};
+	export let handleReject = () => {};
 </script>
 
-{#if visible}
+{#if popupVisible}
 	<div class="popup">
-		<p>{message}</p>
-		<button on:click={onAccept}>Accept</button>
-		<button on:click={onReject}>Reject</button>
+		<p>{popupMessage}</p>
+		<button on:click={handleAccept}>Accept</button>
+		<button on:click={handleReject}>Reject</button>
 	</div>
 {/if}
 

@@ -184,7 +184,7 @@
 	}
 </script>
 
-<Popup {popupMessage} {popupVisible} onAccept={handleAccept} onReject={handleReject} />
+<Popup {popupMessage} {popupVisible} {handleAccept} {handleReject} />
 
 <div class="container" bind:this={container}>
 	<div class="backdrop" bind:this={backdrop}>
@@ -192,9 +192,9 @@
 	</div>
 	<textarea bind:this={textarea} name="text"></textarea>
 	<div class="action-buttons">
-		<div class="circle simile" on:click={displaySimile}></div>
-		<div class="circle scene" on:click={displayScene}></div>
-		<div class="circle pov" on:click={displayPOV}></div>
+		<button class="circle simile" on:click={displaySimile}></button>
+		<button class="circle scene" on:click={displayScene}></button>
+		<button class="circle pov" on:click={displayPOV}></button>
 		<span class="label simile-label">Simile</span>
 		<span class="label scene-label">Scene</span>
 		<span class="label pov-label">POV</span>
@@ -288,12 +288,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		margin-top: 0; /* Remove margin on top */
 	}
 	.circle {
-		width: 30px;
-		height: 30px;
+		width: 20px; /* Make circles smaller */
+		height: 20px; /* Make circles smaller */
 		border-radius: 50%;
-		margin: 10px 0;
+		margin: 5px 0; /* Decrease margin between circles */
 		cursor: pointer;
 		transition: opacity 0.3s;
 		border: none;
@@ -311,16 +312,17 @@
 	}
 
 	.label {
-		opacity: 0;
+		opacity: 0; /* Start as invisible */
 		transition: opacity 0.3s;
-		color: white;
+		color: white; /* Default color, will be overridden */
 		font-size: 14px;
-		margin-left: 10px;
+		margin-left: 10px; /* Adjust as needed */
 		white-space: nowrap;
+		position: absolute; /* Position label next to the circle */
+		right: -80px; /* Adjust based on layout */
 	}
-	.simile:hover ~ .simile-label,
-	.scene:hover ~ .scene-label,
-	.pov:hover ~ .pov-label {
-		opacity: 1;
+	.circle:hover + .label,
+	.circle:focus + .label {
+		opacity: 1; /* Show label on hover or focus */
 	}
 </style>
