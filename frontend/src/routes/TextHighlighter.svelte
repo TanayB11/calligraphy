@@ -140,16 +140,20 @@
 		const marks = highlights.querySelectorAll('mark');
 		marks.forEach((mark) => {
 			mark.style.cursor = 'pointer';
-			mark.addEventListener('click', () => {
+			mark.addEventListener('click', (event) => {
 				const critique = mark.getAttribute('data-critique');
-				showPopupWithMessage(critique);
+				const rect = mark.getBoundingClientRect();
+				showPopupWithMessage(critique, rect.left, rect.bottom); // Pass the left and bottom position of the mark
 			});
 		});
 	}
 
-	function showPopupWithMessage(message) {
+	function showPopupWithMessage(message, x, y) {
 		popupMessage = message;
 		popupVisible = true;
+		// Set the position of the popup
+		document.querySelector('.popup').style.left = `${x}px`;
+		document.querySelector('.popup').style.top = `${y + 20}px`; // 20px below the clicked position
 	}
 
 	function handleAccept() {
@@ -271,7 +275,7 @@
 	:global(mark) {
 		border-radius: 3px;
 		color: transparent;
-		background-color: #b1d5e5;
+		background-color: #ffa07a;
 		cursor: pointer; /* Ensure marks are clickable */
 	}
 

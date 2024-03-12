@@ -15,10 +15,8 @@
 
 <style>
 	.popup {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		position: absolute; /* Ensure this is absolute */
+		transform: translate(-50%, 0); /* Adjust as needed for centering */
 		background-color: white;
 		padding: 20px;
 		border-radius: 8px;
