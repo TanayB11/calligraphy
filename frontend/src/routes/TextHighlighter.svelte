@@ -1,10 +1,14 @@
 <script>
 	import { onMount } from 'svelte';
+	import Popup from './Popup.svelte';
 
 	let textarea;
 	let highlights;
 	let container;
 	let backdrop;
+	let popupVisible = false;
+	let popupMessage = '';
+	let selectedText = '';
 
 	onMount(() => {
 		textarea.addEventListener('input', handleInput);
@@ -36,10 +40,10 @@
 
 		document.addEventListener('keydown', async (e) => {
 			if (e.key === 'S') {
-				const selectedText = window.getSelection().toString();
+				selectedText = window.getSelection().toString();
 				if (selectedText) {
 					const simileData = await fetchSimile(selectedText);
-					alert(`Simile: ${simileData.completion}`);
+					showPopupWithMessage(`Simile: ${simileData.completion}`);
 				}
 			}
 		});
@@ -65,6 +69,34 @@
 
 	async function fetchSimile(text) {
 		const response = await fetch('http://localhost:8000/ml/simile/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ prompt: text })
+		});
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
+		return response.json();
+	}
+
+	async function fetchScene(text) {
+		const response = await fetch('http://localhost:8000/ml/scene/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ prompt: text })
+		});
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
+		return response.json();
+	}
+
+	async function fetchPOV(text) {
+		const response = await fetch('http://localhost:8000/ml/pov/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -124,7 +156,7 @@
 			const color = critiques.factChecking ? 'yellow' : 'lightblue';
 			highlightedText = highlightedText.replace(
 				quote,
-				`<mark style="background-color: ${color};">${quote}</mark>`
+				`<mark style="background-color: ${color};" data-critique="${critiques.description}">${quote}</mark>`
 			);
 		});
 		return highlightedText;
@@ -135,20 +167,64 @@
 		marks.forEach((mark) => {
 			mark.style.cursor = 'pointer';
 			mark.addEventListener('click', () => {
-				alert(mark.textContent);
+				const critique = mark.getAttribute('data-critique');
+				showPopupWithMessage(critique);
 			});
 		});
 	}
+
+	function showPopupWithMessage(message) {
+		popupMessage = message;
+		popupVisible = true;
+	}
+
+	function handleAccept() {
+		console.log('Accepted');
+		popupVisible = false;
+	}
+
+	function handleReject() {
+		console.log('Rejected');
+		popupVisible = false;
+	}
+
+	async function displaySimile() {
+		if (selectedText) {
+			const simileData = await fetchSimile(selectedText);
+			showPopupWithMessage(`Simile: ${simileData.completion}`);
+		}
+	}
+
+	async function displayScene() {
+		if (selectedText) {
+			const sceneData = await fetchScene(selectedText);
+			showPopupWithMessage(`Scene: ${sceneData.completion}`);
+		}
+	}
+
+	async function displayPOV() {
+		if (selectedText) {
+			const povData = await fetchPOV(selectedText);
+			showPopupWithMessage(`POV: ${povData.completion}`);
+		}
+	}
 </script>
+
+<Popup {popupMessage} {popupVisible} onAccept={handleAccept} onReject={handleReject} />
 
 <div class="container" bind:this={container}>
 	<div class="backdrop" bind:this={backdrop}>
 		<div class="highlights" bind:this={highlights}></div>
 	</div>
 	<textarea bind:this={textarea} name="text"></textarea>
-</div>
-<div class="instructions">
-    Press 'S' to generate a simile for the selected text.
+	<div class="action-buttons">
+		<div class="circle simile" on:click={displaySimile}></div>
+		<div class="circle scene" on:click={displayScene}></div>
+		<div class="circle pov" on:click={displayPOV}></div>
+		<span class="label simile-label">Simile</span>
+		<span class="label scene-label">Scene</span>
+		<span class="label pov-label">POV</span>
+	</div>
 </div>
 
 <style>
@@ -240,8 +316,48 @@
 	}
 
 	.instructions {
-	    margin-top: 10px;
-	    font-size: 14px;
-	    color: #666;
+		margin-top: 10px;
+		font-size: 14px;
+		color: #666;
+	}
+
+	.action-buttons {
+		position: absolute;
+		right: -100px; /* Adjust based on layout */
+		top: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.circle {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		margin: 10px 0;
+		cursor: pointer;
+		transition: opacity 0.3s;
+	}
+	.simile {
+		background-color: #007bff;
+	}
+	.scene {
+		background-color: #6f42c1;
+	}
+	.pov {
+		background-color: #e83e8c;
+	}
+
+	.label {
+		opacity: 0;
+		transition: opacity 0.3s;
+		color: white;
+		font-size: 14px;
+		margin-left: 10px;
+		white-space: nowrap;
+	}
+	.simile:hover ~ .simile-label,
+	.scene:hover ~ .scene-label,
+	.pov:hover ~ .pov-label {
+		opacity: 1;
 	}
 </style>
