@@ -21,6 +21,24 @@
 				}
 			}
 		});
+		const circles = container.querySelectorAll('.circle');
+		circles.forEach((circle) => {
+			circle.addEventListener('mouseover', (e) => {
+				const label = circle.nextElementSibling;
+				label.style.opacity = 1;
+				label.style.color = circle.classList.contains('simile')
+					? '#007bff'
+					: circle.classList.contains('scene')
+						? '#6f42c1'
+						: circle.classList.contains('pov')
+							? '#e83e8c'
+							: 'inherit';
+			});
+			circle.addEventListener('mouseout', (e) => {
+				const label = circle.nextElementSibling;
+				label.style.opacity = 0;
+			});
+		});
 	});
 
 	async function fetchCritique(text) {
@@ -288,12 +306,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		margin-top: 0; /* Remove margin on top */
 	}
 	.circle {
-		width: 30px;
-		height: 30px;
+		width: 20px; /* Make circles smaller */
+		height: 20px; /* Make circles smaller */
 		border-radius: 50%;
-		margin: 10px 0;
+		margin: 5px 0; /* Decrease margin between circles */
 		cursor: pointer;
 		transition: opacity 0.3s;
 		border: none;
@@ -311,16 +330,16 @@
 	}
 
 	.label {
-		opacity: 0;
+		opacity: 0; /* Start as invisible */
 		transition: opacity 0.3s;
-		color: white;
 		font-size: 14px;
-		margin-left: 10px;
+		margin-left: 10px; /* Adjust as needed */
 		white-space: nowrap;
+		position: absolute; /* Position label next to the circle */
+		right: -80px; /* Adjust based on layout */
 	}
-	.simile:hover ~ .simile-label,
-	.scene:hover ~ .scene-label,
-	.pov:hover ~ .pov-label {
-		opacity: 1;
+	.circle:hover + .label,
+	.circle:focus + .label {
+		opacity: 1; /* Show label on hover or focus */
 	}
 </style>
