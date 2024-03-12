@@ -332,7 +332,7 @@
 
 	.action-buttons {
 		position: absolute;
-		right: -100px; /* Adjust based on layout */
+		right: 0px; /* Adjust based on layout */
 		top: 0;
 		display: flex;
 		flex-direction: column;
