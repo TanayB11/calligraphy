@@ -9,9 +9,19 @@
 	let popupVisible = false;
 	let popupMessage = '';
 	let selectedText = '';
+	let caretPosition = 0;
 
 	onMount(() => {
 		textarea.addEventListener('input', handleInput);
+		textarea.addEventListener('keypress', checkCaretPosition);
+		textarea.addEventListener('mousedown', checkCaretPosition);
+		textarea.addEventListener('touchstart', checkCaretPosition);
+		textarea.addEventListener('input', checkCaretPosition);
+		textarea.addEventListener('paste', checkCaretPosition);
+		textarea.addEventListener('cut', checkCaretPosition);
+		textarea.addEventListener('mousemove', checkCaretPosition);
+		textarea.addEventListener('select', checkCaretPosition);
+		textarea.addEventListener('selectstart', checkCaretPosition);
 		document.addEventListener('keydown', async (e) => {
 			if (e.key === 'S') {
 				selectedText = window.getSelection().toString();
@@ -185,6 +195,29 @@
 			const povData = await fetchPOV(selectedText);
 			showPopupWithMessage(`POV: ${povData.completion}`);
 		}
+	}
+
+	function checkCaretPosition() {
+		console.log("stuff happening");
+		const newPosition = textarea.selectionStart;
+		if (newPosition !== caretPosition) {
+			caretPosition = newPosition;
+			printMarkAtCursor();
+		}
+	}
+
+	function printMarkAtCursor() {
+		const textBeforeCursor = textarea.value.substring(0, caretPosition);
+		const marks = highlights.querySelectorAll('mark');
+		let cumulativeLength = 0;
+
+		marks.forEach(mark => {
+			cumulativeLength += mark.textContent.length;
+			if (cumulativeLength >= textBeforeCursor.length) {
+				console.log(mark); // Print the mark element or its attributes as needed
+				return;
+			}
+		});
 	}
 </script>
 
