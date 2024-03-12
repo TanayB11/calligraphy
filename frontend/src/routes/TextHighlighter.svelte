@@ -12,32 +12,6 @@
 
 	onMount(() => {
 		textarea.addEventListener('input', handleInput);
-		textarea.addEventListener('focus', () => {
-			textarea.style.pointerEvents = 'auto';
-		});
-		textarea.addEventListener('blur', () => {
-			textarea.style.pointerEvents = 'none';
-		});
-		textarea.style.pointerEvents = 'none';
-
-		// Dynamically manage pointer-events for marks
-		textarea.addEventListener('mousemove', (e) => {
-			const rect = textarea.getBoundingClientRect();
-			const x = e.clientX - rect.left; // x position within the element.
-			const y = e.clientY - rect.top; // y position within the element.
-			const elementAtPoint = document.elementFromPoint(x, y);
-
-			if (elementAtPoint && elementAtPoint.tagName === 'MARK') {
-				textarea.style.pointerEvents = 'none';
-			} else {
-				textarea.style.pointerEvents = 'auto';
-			}
-		});
-
-		textarea.addEventListener('mouseleave', () => {
-			textarea.style.pointerEvents = 'auto';
-		});
-
 		document.addEventListener('keydown', async (e) => {
 			if (e.key === 'S') {
 				selectedText = window.getSelection().toString();
@@ -218,9 +192,9 @@
 	</div>
 	<textarea bind:this={textarea} name="text"></textarea>
 	<div class="action-buttons">
-		<button class="circle simile" on:click={displaySimile} on:keypress={displaySimile}></button>
-		<button class="circle scene" on:click={displayScene} on:keypress={displayScene}></button>
-		<button class="circle pov" on:click={displayPOV} on:keypress={displayPOV}></button>
+		<div class="circle simile" on:click={displaySimile}></div>
+		<div class="circle scene" on:click={displayScene}></div>
+		<div class="circle pov" on:click={displayPOV}></div>
 		<span class="label simile-label">Simile</span>
 		<span class="label scene-label">Scene</span>
 		<span class="label pov-label">POV</span>
@@ -301,14 +275,6 @@
 		cursor: pointer; /* Ensure marks are clickable */
 	}
 
-	:global(.perspective .backdrop) {
-		transform: perspective(1500px) translateX(-125px) rotateY(45deg) scale(0.9);
-	}
-
-	:global(.perspective textarea) {
-		transform: perspective(1500px) translateX(155px) rotateY(45deg) scale(1.1);
-	}
-
 	textarea:focus {
 		outline: none;
 		box-shadow: 0 0 0 2px #c6aada;
@@ -323,7 +289,7 @@
 		flex-direction: column;
 		align-items: center;
 	}
-	button.circle {
+	.circle {
 		width: 30px;
 		height: 30px;
 		border-radius: 50%;
