@@ -127,7 +127,7 @@
 		critiqueData.sentences.forEach((sentence) => {
 			const { quote, critiques } = sentence;
 			// Example: Change color based on critique type (simplified for brevity)
-			const color = critiques.factChecking ? 'yellow' : 'lightblue';
+			const color = critiques.factChecking ? '#FFA07A' : 'lightblue';
 			highlightedText = highlightedText.replace(
 				quote,
 				`<mark style="background-color: ${color};" data-critique="${critiques.description}">${quote}</mark>`
