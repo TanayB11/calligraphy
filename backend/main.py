@@ -13,7 +13,7 @@ llm = Llama(
     model_path="../ml/models/mistral_similes-Q5_K_S.gguf",
     chat_format="mistral-instruct",
     n_ctx=8192,
-    n_gpu_layers=-1,
+    n_gpu_layers=0,
 )
 
 app = FastAPI()
