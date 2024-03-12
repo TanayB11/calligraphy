@@ -36,22 +36,26 @@
 	});
 
 	async function fetchCritique(text) {
-		const response = await fetch('/ml/critique_openai/', {
+		const response = await fetch('http://localhost:8000/ml/critique_openai/', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
+				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ prompt: text }),
+			body: JSON.stringify({ prompt: text })
 		});
 		if (!response.ok) {
 			throw new Error('Network response was not ok');
 		}
-		return response.json();
+		const data = await response.json();
+		// Parse the 'completion' field from the response to get the actual critique data
+		const critiqueData = JSON.parse(data.completion);
+		console.log(critiqueData); // Log it to ensure it's structured as expected
+		return critiqueData;
 	}
 
 	function debounce(func, wait) {
 		let timeout;
-		return function(...args) {
+		return function (...args) {
 			const later = () => {
 				clearTimeout(timeout);
 				func(...args);
@@ -90,11 +94,14 @@
 
 	function applyHighlights(text, critiqueData) {
 		let highlightedText = text;
-		critiqueData.completion.sentences.forEach(sentence => {
+		critiqueData.sentences.forEach((sentence) => {
 			const { quote, critiques } = sentence;
 			// Example: Change color based on critique type (simplified for brevity)
 			const color = critiques.factChecking ? 'yellow' : 'lightblue';
-			highlightedText = highlightedText.replace(quote, `<mark style="background-color: ${color};">${quote}</mark>`);
+			highlightedText = highlightedText.replace(
+				quote,
+				`<mark style="background-color: ${color};">${quote}</mark>`
+			);
 		});
 		return highlightedText;
 	}
@@ -114,7 +121,7 @@
 	<div class="backdrop" bind:this={backdrop}>
 		<div class="highlights" bind:this={highlights}></div>
 	</div>
-	<textarea bind:this={textarea} name="text">This is a test</textarea>
+	<textarea bind:this={textarea} name="text"></textarea>
 </div>
 
 <style>
