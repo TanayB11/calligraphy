@@ -218,9 +218,9 @@
 	</div>
 	<textarea bind:this={textarea} name="text"></textarea>
 	<div class="action-buttons">
-		<div class="circle simile" on:click={displaySimile}></div>
-		<div class="circle scene" on:click={displayScene}></div>
-		<div class="circle pov" on:click={displayPOV}></div>
+		<button class="circle simile" on:click={displaySimile} on:keypress={displaySimile}></button>
+		<button class="circle scene" on:click={displayScene} on:keypress={displayScene}></button>
+		<button class="circle pov" on:click={displayPOV} on:keypress={displayPOV}></button>
 		<span class="label simile-label">Simile</span>
 		<span class="label scene-label">Scene</span>
 		<span class="label pov-label">POV</span>
@@ -315,12 +315,6 @@
 		pointer-events: auto; /* Re-enable pointer events when focused */
 	}
 
-	.instructions {
-		margin-top: 10px;
-		font-size: 14px;
-		color: #666;
-	}
-
 	.action-buttons {
 		position: absolute;
 		right: -100px; /* Adjust based on layout */
@@ -329,13 +323,16 @@
 		flex-direction: column;
 		align-items: center;
 	}
-	.circle {
+	button.circle {
 		width: 30px;
 		height: 30px;
 		border-radius: 50%;
 		margin: 10px 0;
 		cursor: pointer;
 		transition: opacity 0.3s;
+		border: none;
+		background-color: inherit;
+		padding: 0;
 	}
 	.simile {
 		background-color: #007bff;
