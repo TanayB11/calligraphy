@@ -3,18 +3,23 @@
 	export let popupVisible = false;
 	export let handleAccept = () => {};
 	export let handleReject = () => {};
+	export let showActions = true; // New prop to control the visibility of action buttons
 </script>
 
 {#if popupVisible}
 	<div class="popup">
 		<p>{popupMessage}</p>
-		<button on:click={handleAccept}>Accept</button>
-		<button on:click={handleReject}>Reject</button>
+		{#if showActions}
+			<!-- Conditionally render buttons based on showActions prop -->
+			<button on:click={handleAccept}>Accept</button>
+			<button on:click={handleReject}>Reject</button>
+		{/if}
 	</div>
 {/if}
 
 <style>
 	.popup {
+		width: 200px; /* Adjust the width as needed */
 		position: absolute; /* Ensure this is absolute */
 		transform: translate(-50%, 0); /* Adjust as needed for centering */
 		background-color: white;

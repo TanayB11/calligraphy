@@ -10,6 +10,7 @@
 	let popupMessage = '';
 	let selectedText = '';
 	let caretPosition = 0;
+	let showActions = false;
 
 	onMount(() => {
 		textarea.addEventListener('input', handleInput);
@@ -27,7 +28,7 @@
 				selectedText = window.getSelection().toString();
 				if (selectedText) {
 					const simileData = await fetchSimile(selectedText);
-					showPopupWithMessage(`Simile: ${simileData.completion}`);
+					showPopupWithMessage(`Simile: ${simileData.completion}`, 0, 0, true); // Pass true to show action buttons
 				}
 			}
 		});
@@ -138,9 +139,12 @@
 			const { quote, critiques } = sentence;
 			// Example: Change color based on critique type (simplified for brevity)
 			const color = critiques.factChecking ? '#FFA07A' : 'lightblue';
+			// get start and end index of quote
+			const startIndex = textarea.value.indexOf(quote);
+			const endIndex = startIndex + quote.length;
 			highlightedText = highlightedText.replace(
 				quote,
-				`<mark style="background-color: ${color};" data-critique="${critiques.description}">${quote}</mark>`
+				`<mark style="background-color: ${color};" data-critique="${critiques.description}" data-start-index="${startIndex}" data-end-index="${endIndex}">${quote}</mark>`
 			);
 		});
 		return highlightedText;
@@ -153,17 +157,25 @@
 			mark.addEventListener('click', (event) => {
 				const critique = mark.getAttribute('data-critique');
 				const rect = mark.getBoundingClientRect();
-				showPopupWithMessage(critique, rect.left, rect.bottom); // Pass the left and bottom position of the mark
+				showPopupWithMessage(critique, rect.left, rect.bottom, false); // Pass false to hide action buttons
+			});
+			mark.addEventListener('mouseenter', (event) => {
+				const critique = mark.getAttribute('data-critique');
+				const rect = mark.getBoundingClientRect();
+				showPopupWithMessage(critique, rect.left, rect.bottom + 20, false); // Use the left and bottom position of the mark, 20px below, pass false to hide action buttons
 			});
 		});
 	}
 
-	function showPopupWithMessage(message, x, y) {
+	function showPopupWithMessage(message, x, y, sa = true) {
+		showActions = sa;
 		popupMessage = message;
 		popupVisible = true;
 		// Set the position of the popup
 		document.querySelector('.popup').style.left = `${x}px`;
-		document.querySelector('.popup').style.top = `${y + 20}px`; // 20px below the clicked position
+		document.querySelector('.popup').style.top = `${y}px`; // Adjusted to the new position
+		// Update the Popup component to receive the showActions parameter
+		// This might involve setting a reactive variable or store that the Popup component can access
 	}
 
 	function handleAccept() {
@@ -179,49 +191,49 @@
 	async function displaySimile() {
 		if (selectedText) {
 			const simileData = await fetchSimile(selectedText);
-			showPopupWithMessage(`Simile: ${simileData.completion}`);
+			showPopupWithMessage(`Simile: ${simileData.completion}`, 0, 0, true); // Pass true to show action buttons
 		}
 	}
 
 	async function displayScene() {
 		if (selectedText) {
 			const sceneData = await fetchScene(selectedText);
-			showPopupWithMessage(`Scene: ${sceneData.completion}`);
+			showPopupWithMessage(`Scene: ${sceneData.completion}`, 0, 0, true); // Pass true to show action buttons
 		}
 	}
 
 	async function displayPOV() {
 		if (selectedText) {
 			const povData = await fetchPOV(selectedText);
-			showPopupWithMessage(`POV: ${povData.completion}`);
+			showPopupWithMessage(`POV: ${povData.completion}`, 0, 0, true); // Pass true to show action buttons
 		}
 	}
 
 	function checkCaretPosition() {
-		console.log("stuff happening");
+		console.log('stuff happening');
 		const newPosition = textarea.selectionStart;
 		if (newPosition !== caretPosition) {
 			caretPosition = newPosition;
+			console.log('caretPosition', caretPosition);
 			printMarkAtCursor();
 		}
 	}
 
 	function printMarkAtCursor() {
-		const textBeforeCursor = textarea.value.substring(0, caretPosition);
 		const marks = highlights.querySelectorAll('mark');
-		let cumulativeLength = 0;
-
-		marks.forEach(mark => {
-			cumulativeLength += mark.textContent.length;
-			if (cumulativeLength >= textBeforeCursor.length) {
-				console.log(mark); // Print the mark element or its attributes as needed
-				return;
+		marks.forEach((mark) => {
+			const startIndex = parseInt(mark.getAttribute('data-start-index'));
+			const endIndex = parseInt(mark.getAttribute('data-end-index'));
+			if (caretPosition >= startIndex && caretPosition <= endIndex) {
+				const critique = mark.getAttribute('data-critique');
+				const rect = mark.getBoundingClientRect();
+				showPopupWithMessage(critique, rect.left, window.scrollY + rect.bottom, false); // Adjust for scrolling, pass false to hide action buttons
 			}
 		});
 	}
 </script>
 
-<Popup {popupMessage} {popupVisible} {handleAccept} {handleReject} />
+<Popup {popupMessage} {popupVisible} {handleAccept} {handleReject} {showActions} />
 
 <div class="container" bind:this={container}>
 	<div class="backdrop" bind:this={backdrop}>
