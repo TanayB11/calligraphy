@@ -33,6 +33,16 @@
 		textarea.addEventListener('mouseleave', () => {
 			textarea.style.pointerEvents = 'auto';
 		});
+
+		document.addEventListener('keydown', async (e) => {
+			if (e.key === 'S') {
+				const selectedText = window.getSelection().toString();
+				if (selectedText) {
+					const simileData = await fetchSimile(selectedText);
+					alert(`Simile: ${simileData.completion}`);
+				}
+			}
+		});
 	});
 
 	async function fetchCritique(text) {
@@ -51,6 +61,20 @@
 		const critiqueData = JSON.parse(data.completion);
 		console.log(critiqueData); // Log it to ensure it's structured as expected
 		return critiqueData;
+	}
+
+	async function fetchSimile(text) {
+		const response = await fetch('http://localhost:8000/ml/simile/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ prompt: text })
+		});
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
+		return response.json();
 	}
 
 	function debounce(func, wait) {
@@ -122,6 +146,9 @@
 		<div class="highlights" bind:this={highlights}></div>
 	</div>
 	<textarea bind:this={textarea} name="text"></textarea>
+</div>
+<div class="instructions">
+    Press 'S' to generate a simile for the selected text.
 </div>
 
 <style>
@@ -210,5 +237,11 @@
 		outline: none;
 		box-shadow: 0 0 0 2px #c6aada;
 		pointer-events: auto; /* Re-enable pointer events when focused */
+	}
+
+	.instructions {
+	    margin-top: 10px;
+	    font-size: 14px;
+	    color: #666;
 	}
 </style>
