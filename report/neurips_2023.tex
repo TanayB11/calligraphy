@@ -64,11 +64,19 @@
 
 
 \begin{abstract}
-  Calligraphy is a writing assistant that uses local language models (LLMs) to provide real-time feedback to users as they write. The system is designed to help users improve their writing by highlighting text and critiquing their writing as they work choice, grammar, and style. Calligraphy uses a combination of pre-trained LLMs and user-specific data to provide personalized feedback. The system is designed to be easy to use and to integrate seamlessly with existing writing tools. In this paper, we describe the design and implementation of Calligraphy and present results from a user study that demonstrate the system's effectiveness at improving writing quality.
+  In this work, we present "Calligraphy," a system designed to augment the
+  capabilities of local Large Language Models (LLMs) as writing assistants.
+  Our approach focuses on two main tasks: creative rewording and writing
+  critiques. We leverage techniques such as fine-tuning on domain-specific
+  data, employing Low-Rank Adapters (LoRA), and post-training quantization to
+  enhance the performance of LLMs while maintaining efficiency. Our
+  evaluation demonstrates that our system outperforms baseline models in
+  terms of perplexity, a measure of language model fluency, and provides
+  qualitative improvements in creative writing tasks.
 \end{abstract}
 
 
-\section{Submission of papers to NeurIPS 2023}
+\section{Introduction}
 
 
 Please read the instructions below carefully and follow them faithfully. \textbf{Important:} This year the checklist will be submitted separately from the main paper in OpenReview, please review it well ahead of the submission deadline: \url{https://neurips.cc/public/guides/PaperChecklist}.
@@ -80,7 +88,7 @@ Please read the instructions below carefully and follow them faithfully. \textbf
 Papers to be submitted to NeurIPS 2023 must be prepared according to the
 instructions presented here. Papers may only be up to {\bf nine} pages long,
 including figures. Additional pages \emph{containing only acknowledgments and
-references} are allowed. Papers that exceed the page limit will not be
+  references} are allowed. Papers that exceed the page limit will not be
 reviewed, or in any other way considered for presentation at the conference.
 
 
@@ -122,7 +130,7 @@ NeurIPS style, please use the \verb+preprint+ option. This will create a
 nonanonymized version of your work with the text ``Preprint. Work in progress.''
 in the footer. This version may be distributed as you see fit, as long as you do not say which conference it was submitted to. Please \textbf{do
   not} use the \verb+final+ option, which should \textbf{only} be used for
-papers accepted to NeurIPS. 
+papers accepted to NeurIPS.
 
 
 At submission time, please omit the \verb+final+ and \verb+preprint+
@@ -354,33 +362,33 @@ achieve this.
 \begin{itemize}
 
 
-\item You should directly generate PDF files using \verb+pdflatex+.
+  \item You should directly generate PDF files using \verb+pdflatex+.
 
 
-\item You can check which fonts a PDF files uses.  In Acrobat Reader, select the
-  menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-  also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-  available out-of-the-box on most Linux machines.
+  \item You can check which fonts a PDF files uses.  In Acrobat Reader, select the
+        menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
+        also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
+        available out-of-the-box on most Linux machines.
 
 
-\item \verb+xfig+ "patterned" shapes are implemented with bitmap fonts.  Use
-  "solid" shapes instead.
+  \item \verb+xfig+ "patterned" shapes are implemented with bitmap fonts.  Use
+        "solid" shapes instead.
 
 
-\item The \verb+\bbold+ package almost always uses bitmap fonts.  You should use
-  the equivalent AMS Fonts:
-\begin{verbatim}
+  \item The \verb+\bbold+ package almost always uses bitmap fonts.  You should use
+        the equivalent AMS Fonts:
+        \begin{verbatim}
    \usepackage{amsfonts}
 \end{verbatim}
-followed by, e.g., \verb+\mathbb{R}+, \verb+\mathbb{N}+, or \verb+\mathbb{C}+
-for $\mathbb{R}$, $\mathbb{N}$ or $\mathbb{C}$.  You can also use the following
-workaround for reals, natural and complex:
-\begin{verbatim}
+        followed by, e.g., \verb+\mathbb{R}+, \verb+\mathbb{N}+, or \verb+\mathbb{C}+
+        for $\mathbb{R}$, $\mathbb{N}$ or $\mathbb{C}$.  You can also use the following
+        workaround for reals, natural and complex:
+        \begin{verbatim}
    \newcommand{\RR}{I\!\!R} %real numbers
    \newcommand{\Nat}{I\!\!N} %natural numbers
    \newcommand{\CC}{I\!\!\!\!C} %complex numbers
 \end{verbatim}
-Note that \verb+amsfonts+ is automatically loaded by the \verb+amssymb+ package.
+        Note that \verb+amsfonts+ is automatically loaded by the \verb+amssymb+ package.
 
 
 \end{itemize}
@@ -411,13 +419,13 @@ necessary.
 
 
 \begin{ack}
-Use unnumbered first level headings for the acknowledgments. All acknowledgments
-go at the end of the paper before the list of references. Moreover, you are required to declare
-funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
-More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2023/PaperInformation/FundingDisclosure}.
+  Use unnumbered first level headings for the acknowledgments. All acknowledgments
+  go at the end of the paper before the list of references. Moreover, you are required to declare
+  funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
+  More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2023/PaperInformation/FundingDisclosure}.
 
 
-Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
+  Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
 \end{ack}
 
 
@@ -448,8 +456,8 @@ connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
 pp.\ 609--616. Cambridge, MA: MIT Press.
 
 
-[2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
-  Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+  [2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
+    Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
 TELOS/Springer--Verlag.
 
 
